@@ -28,6 +28,39 @@ Flow:
 - Java 21
 - Docker & Docker Compose
 - Make (optional)
+- 
+## Folder Structure
+
+```
+settlement/
+├── src/
+│   ├── main/
+│   │   ├── java/com/sporty/settlement/
+│   │   │   ├── SettlementApplication.java   # Spring Boot entry point
+│   │   │   ├── controller/                  # REST API endpoints
+│   │   │   ├── dto/                         # Request/Response transfer objects
+│   │   │   ├── entity/                      # JPA/DB entities
+│   │   │   ├── repository/                  # Spring Data repositories (DB access)
+│   │   │   ├── service/                     # Business logic
+│   │   │   ├── exception/                   # Custom exceptions & handlers
+│   │   │   ├── kafka/                       # Kafka producer/consumer integration
+│   │   │   └── rocketmq/                    # RocketMQ integration (mocked in-process)
+│   │   └── resources/
+│   │       ├── application.yaml             # Default config
+│   │       ├── application-test.yaml        # Test environment config
+│   │       ├── application-prod.yaml        # Production environment config
+│   │       ├── schema.sql                   # H2 DB schema definition
+│   │       └── data.sql                     # H2 DB seed data
+│   └── test/
+│       └── java/com/sporty/settlement/
+│           ├── controller/                  # Controller unit tests
+│           └── integration/                 # Integration tests
+├── build.gradle                             # Gradle build definition
+├── settings.gradle                          # Gradle project settings
+├── Dockerfile                               # Docker image definition
+├── docker-compose.yml                       # Local infra (Kafka, Prometheus, Grafana)
+└── Makefile                                 # Shortcut commands (dev, test, format, etc.)
+```
 
 ## Run
 
@@ -40,8 +73,9 @@ make dev
 Starts:
 - Kafka: `localhost:9092`
 - Kafka UI (Kafbat): `http://localhost:8090`
-- Prometheus: `http://localhost:9191`
-- Grafana: `http://localhost:3000` (`admin/admin`)
+- Prometheus: `http://localhost:9191` -> Targets: http://localhost:9191/targets
+- Grafana: `http://localhost:3000` (`admin/admin`) 
+  - Scrapped Metrics: http://localhost:3000/a/grafana-metricsdrilldown-app/drilldown?from=now-5m&to=now&timezone=browser&var-metrics_filters=application%7C%3D%7Csettlement&var-filters=application%7C%3D%7Csettlement&var-labelsWingman=%28none%29&layout=grid&filters-rule=&filters-prefix=&filters-suffix=&search_txt=&var-metrics-reducer-sort-by=default&filters-recent=&var-ds=PBFA97CFB590B2093&var-other_metric_filters=
 
 App:
 - `http://localhost:9090`

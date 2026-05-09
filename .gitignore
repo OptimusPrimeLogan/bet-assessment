@@ -39,8 +39,3 @@ out/
 node_modules
 
 .env
-
-# Gradle wrapper
-gradle/wrapper/
-gradlew
-gradlew.bat
