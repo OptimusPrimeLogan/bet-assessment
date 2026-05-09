@@ -4,6 +4,7 @@ import com.sporty.settlement.dto.BetSettlementStatus;
 import com.sporty.settlement.dto.EventOutcome;
 import com.sporty.settlement.entity.Bet;
 import com.sporty.settlement.entity.BetStatus;
+
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -42,4 +43,3 @@ class SettlementDecisionServiceTest {
         return bet;
     }
 }
-

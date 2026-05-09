@@ -3,6 +3,7 @@ package com.sporty.settlement.controller;
 import com.sporty.settlement.entity.Bet;
 import com.sporty.settlement.entity.BetStatus;
 import com.sporty.settlement.service.SettlementService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +46,7 @@ class BetControllerTest {
     void getBetsByEvent_shouldReturnBets_whenFound() throws Exception {
         when(settlementService.getBetsByEventId(101L)).thenReturn(List.of(buildBet(1L, BetStatus.WON)));
 
-        mockMvc.perform(get("/api/bets/event/101"))
+        mockMvc.perform(get("/api/bets/101"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data[0].id", is(1)))
@@ -58,7 +59,7 @@ class BetControllerTest {
     void getBetsByEvent_shouldReturn404_whenNoBetsFound() throws Exception {
         when(settlementService.getBetsByEventId(999L)).thenReturn(List.of());
 
-        mockMvc.perform(get("/api/bets/event/999")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/bets/999")).andExpect(status().isNotFound());
     }
 
     private Bet buildBet(Long id, BetStatus status) {

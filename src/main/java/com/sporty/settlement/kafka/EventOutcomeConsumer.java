@@ -2,8 +2,10 @@ package com.sporty.settlement.kafka;
 
 import com.sporty.settlement.dto.EventOutcome;
 import com.sporty.settlement.service.SettlementService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 

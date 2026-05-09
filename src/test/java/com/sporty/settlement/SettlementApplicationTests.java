@@ -7,7 +7,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@EmbeddedKafka(partitions = 1, topics = {"event-outcomes"})
+@EmbeddedKafka(
+        partitions = 1,
+        topics = {"event-outcomes"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @ActiveProfiles("test")
 class SettlementApplicationTests {

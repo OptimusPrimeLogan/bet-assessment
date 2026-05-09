@@ -5,4 +5,3 @@ import com.sporty.settlement.dto.EventOutcome;
 public interface EventOutcomePublisher {
     void publish(EventOutcome outcome);
 }
-

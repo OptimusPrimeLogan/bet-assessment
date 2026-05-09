@@ -6,6 +6,7 @@ import com.sporty.settlement.entity.Bet;
 import com.sporty.settlement.entity.BetStatus;
 import com.sporty.settlement.repository.BetRepository;
 import com.sporty.settlement.rocketmq.BetSettlementDispatcher;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,9 +27,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SettlementServiceTest {
 
-    @Mock private BetRepository betRepository;
-    @Mock private BetSettlementDispatcher betSettlementDispatcher;
-    @Mock private BetSettlementDecision betSettlementDecision;
+    @Mock
+    private BetRepository betRepository;
+
+    @Mock
+    private BetSettlementDispatcher betSettlementDispatcher;
+
+    @Mock
+    private BetSettlementDecision betSettlementDecision;
 
     @InjectMocks
     private SettlementService settlementService;
@@ -77,8 +83,12 @@ class SettlementServiceTest {
 
         settlementService.processEventOutcome(outcome);
 
-        verify(betSettlementDispatcher).send(argThat(s -> s.status() == BetSettlementStatus.WON && s.betId().equals(1L)));
-        verify(betSettlementDispatcher).send(argThat(s -> s.status() == BetSettlementStatus.LOST && s.betId().equals(2L)));
+        verify(betSettlementDispatcher)
+                .send(argThat(
+                        s -> s.status() == BetSettlementStatus.WON && s.betId().equals(1L)));
+        verify(betSettlementDispatcher)
+                .send(argThat(
+                        s -> s.status() == BetSettlementStatus.LOST && s.betId().equals(2L)));
     }
 
     @Test

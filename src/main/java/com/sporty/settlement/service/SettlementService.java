@@ -6,8 +6,10 @@ import com.sporty.settlement.entity.Bet;
 import com.sporty.settlement.entity.BetStatus;
 import com.sporty.settlement.repository.BetRepository;
 import com.sporty.settlement.rocketmq.BetSettlementDispatcher;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +25,7 @@ public class SettlementService {
     private final BetSettlementDecision betSettlementDecision;
 
     /**
-     * A second delivery of the same event finds no PENDING bets
-     * (already WON/LOST), so no double-settlement can occur.
+     * A second delivery of the same event finds no PENDING bets (already WON/LOST), so no double-settlement can occur.
      */
     @Transactional
     public void processEventOutcome(EventOutcome outcome) {

@@ -27,9 +27,12 @@ class SettlementIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isAccepted());
 
         await().atMost(5, SECONDS).untilAsserted(() -> {
-            assertThat(betRepository.findByEventIdAndStatus(101L, BetStatus.WON)).isNotEmpty();
-            assertThat(betRepository.findByEventIdAndStatus(101L, BetStatus.LOST)).isNotEmpty();
-            assertThat(betRepository.findByEventIdAndStatus(101L, BetStatus.PENDING)).isEmpty();
+            assertThat(betRepository.findByEventIdAndStatus(101L, BetStatus.WON))
+                    .isNotEmpty();
+            assertThat(betRepository.findByEventIdAndStatus(101L, BetStatus.LOST))
+                    .isNotEmpty();
+            assertThat(betRepository.findByEventIdAndStatus(101L, BetStatus.PENDING))
+                    .isEmpty();
         });
     }
 }

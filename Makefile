@@ -28,10 +28,10 @@ clean:
 	./gradlew clean
 
 test:
-	./gradlew test
+	./gradlew clean test
 
 check:
-	./gradlew spotlessCheck test
+	./gradlew clean spotlessCheck test
 
 format:
-	./gradlew spotlessApply
+	./gradlew clean spotlessApply

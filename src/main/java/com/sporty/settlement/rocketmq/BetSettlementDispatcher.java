@@ -5,4 +5,3 @@ import com.sporty.settlement.dto.BetSettlement;
 public interface BetSettlementDispatcher {
     void send(BetSettlement settlement);
 }
-
