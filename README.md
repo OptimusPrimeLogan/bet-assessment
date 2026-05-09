@@ -59,7 +59,6 @@ settlement/
 ├── settings.gradle                          # Gradle project settings
 ├── Dockerfile                               # Docker image definition
 ├── docker-compose.yml                       # Local infra (Kafka, Prometheus, Grafana)
-└── Makefile                                 # Shortcut commands (dev, test, format, etc.)
 ```
 
 ## Run
@@ -67,7 +66,8 @@ settlement/
 ### Dev (app local, infra in Docker)
 
 ```shell
-make dev
+  docker compose up -d kafka kafbat prometheus grafana
+  ./gradlew bootRun
 ```
 
 Starts:
@@ -81,13 +81,9 @@ App:
 - `http://localhost:9090`
 
 ### Fully containerised
-
 ```shell
-make containerised
+  docker compose up --build -d
 ```
-
-Topics:
-- `event-outcomes`
 
 ## API
 
@@ -95,25 +91,24 @@ Swagger:
 - `http://localhost:9090/swagger-ui.html`
 
 Publish outcome:
-```shell
-curl -X POST http://localhost:9090/api/events/outcome \
-  -H "Content-Type: application/json" \
-  -d '{"eventId":101,"eventName":"Football Match","winnerId":10}'
+
+![img.png](img.png)
+```
+{"eventId":101,"eventName":"Football Match","winnerId":10}
 ```
 
-Fetch bets:
-By event:
-```shell
-curl http://localhost:9090/api/bets/101
-```
+Fetch bets by event to verify settlement:
+
+![img_1.png](img_1.png)
+
 
 ## Testing
 
 ```shell
-make test
+  ./gradlew clean test
 ```
 
-Coverage:
+Code Coverage:
 - `build/reports/jacoco/test/html/index.html`
 
 ## Observability endpoints
@@ -123,14 +118,17 @@ Coverage:
 - `GET /actuator/prometheus`
 
 ## Code quality
-
+Checks for code formatting using Spotless:
 ```shell
-make format
-make check
+	./gradlew clean spotlessCheck
 ```
-
+Auto-formats code using Spotless:
+```shell
+	./gradlew clean spotlessApply
+```
 ## Cleanup
 
 ```shell
-make clean
+	docker compose down -v
+	./gradlew clean
 ```
