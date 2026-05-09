@@ -1,0 +1,102 @@
+version: "3.8"
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.9.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  settlement:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: settlement
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:h2:mem:settlementdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      DB_DRIVER: org.h2.Driver
+      DB_USERNAME: sa
+      DB_PASSWORD:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      APP_KAFKA_TOPIC_EVENT_OUTCOMES: event-outcomes
+      APP_KAFKA_TOPIC_BET_SETTLEMENTS: bet-settlements
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  kafbat:
+    image: ghcr.io/kafbat/kafka-ui:latest
+    container_name: kafbat
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9191:9090"
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        cat <<EOF > /tmp/prometheus.yml
+        global:
+          scrape_interval: 3s
+        scrape_configs:
+          - job_name: 'settlement-app'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+              - targets: ['172.17.0.1:9090', 'host.docker.internal:9090']
+                labels:
+                  application: 'settlement'
+        EOF
+        prometheus --config.file=/tmp/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/datasources.yml
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            access: proxy
+            url: http://prometheus:9090
+            isDefault: true
+        EOF
+        /run.sh

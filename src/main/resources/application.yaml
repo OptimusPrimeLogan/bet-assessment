@@ -1,0 +1,65 @@
+server:
+  port: ${SERVER_PORT:9090}
+  shutdown: graceful
+
+spring:
+  application:
+    name: settlement
+  lifecycle:
+    timeout-per-shutdown-phase: ${SHUTDOWN_TIMEOUT:20s}
+
+  datasource:
+    url: ${DB_URL:jdbc:h2:mem:settlementdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    listener:
+      concurrency: ${KAFKA_CONCURRENCY:3}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:settlement-group}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.sporty.settlement.*"
+        spring.json.value.default.type: com.sporty.settlement.dto.EventOutcome
+
+app:
+  kafka:
+    partitions: ${KAFKA_PARTITIONS:3}
+    topics:
+      event-outcomes: ${APP_KAFKA_TOPIC_EVENT_OUTCOMES:event-outcomes}
+      bet-settlements: ${APP_KAFKA_TOPIC_BET_SETTLEMENTS:bet-settlements}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus,metrics"
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    root: INFO
+    com.sporty.settlement: INFO
+    org.apache.kafka.clients: WARN
+    org.apache.kafka.common: WARN

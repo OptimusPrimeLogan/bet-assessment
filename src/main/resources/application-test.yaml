@@ -1,0 +1,16 @@
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+
+logging:
+  level:
+    org.apache.kafka: WARN
+    kafka: WARN
+    org.springframework.kafka: WARN
